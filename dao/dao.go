@@ -4,16 +4,17 @@ import (
 	"LoginServer/models"
 	"LoginServer/store"
 	"fmt"
-	"log"
+	"net/http"
 
 	"crypto/sha256"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
-	queryCheckPassword = "SELECT password FROM login WHERE userid=$1"
+	queryCheckPassword = "SELECT password FROM credentials WHERE userid = ?"
 )
 
 type DataStore struct {
@@ -28,13 +29,18 @@ func (ds *DataStore) CheckCreds(c *gin.Context, creds models.Credentials) error 
 	h := sha256.New()
 	h.Write([]byte(creds.Password))
 	passHash := fmt.Sprintf("%x", h.Sum(nil))
-	log.Println(passHash)
-	var sum string
 
-	queryError := ds.Store.Get(&sum, queryCheckPassword, creds.UserName)
+	var res []string
+
+	queryError := ds.Store.Select(&res, queryCheckPassword, creds.UserName)
 	if queryError != nil {
-		return fmt.Errorf("error: no such user present: %v", queryError)
+		c.JSON(http.StatusInternalServerError, queryError)
+		c.Abort()
+
+		return fmt.Errorf("internal server error: %v", queryError.Error())
 	}
+
+	sum := res[0]
 
 	if sum != passHash {
 		return fmt.Errorf("error: wrong password")

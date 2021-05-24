@@ -1,7 +1,7 @@
 package controller
 
 import (
-	services "LoginServer/ServiceLayer"
+	service "LoginServer/ServiceLayer"
 	"LoginServer/models"
 	"log"
 	"net/http"
@@ -11,11 +11,11 @@ import (
 )
 
 type Controller struct {
-	Service services.Service
+	Service service.Service
 }
 
-func NewController(svc services.Service) *Controller {
-	return &Controller{Service: svc}
+func NewController(svc *service.Service) *Controller {
+	return &Controller{Service: *svc}
 }
 
 func (con *Controller) Signin(c *gin.Context) {
@@ -31,6 +31,7 @@ func (con *Controller) Signin(c *gin.Context) {
 	if loginError != nil {
 		c.JSON(http.StatusUnauthorized, loginError.Error())
 		c.Abort()
+		return
 	}
 
 	c.Status(http.StatusOK)
