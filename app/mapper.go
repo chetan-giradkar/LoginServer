@@ -17,6 +17,7 @@ func Map(ds *store.DataStore) {
 	ginRouter := gin.Default()
 
 	ginRouter.POST("/signin", contollerObject.Signin)
+	ginRouter.POST("/register", contollerObject.Register)
 
 	ginRouter.Run()
 }

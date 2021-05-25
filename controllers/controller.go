@@ -36,3 +36,22 @@ func (con *Controller) Signin(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
+
+func (con *Controller) Register(c *gin.Context) {
+	var creds models.Credentials
+	bindingError := c.ShouldBindBodyWith(&creds, binding.JSON)
+	if bindingError != nil {
+		log.Println("Error: Bad Request: ", bindingError)
+
+		c.JSON(http.StatusBadRequest, bindingError.Error())
+		c.Abort()
+	}
+	loginError := con.Service.Register(c, creds)
+	if loginError != nil {
+		c.JSON(http.StatusUnauthorized, loginError.Error())
+		c.Abort()
+		return
+	}
+
+	c.Status(http.StatusOK)
+}

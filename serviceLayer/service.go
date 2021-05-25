@@ -23,3 +23,12 @@ func (s *Service) Login(c *gin.Context, creds models.Credentials) error {
 
 	return nil
 }
+
+func (s *Service) Register(c *gin.Context, creds models.Credentials) error {
+	passwordError := s.DataStore.Register(c, creds)
+	if passwordError != nil {
+		return passwordError
+	}
+
+	return nil
+}
