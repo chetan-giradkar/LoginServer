@@ -16,3 +16,6 @@ The MicroService also registers new users at /register endpoint
     Method : POST  
     Request Payload : `{"userid": "username","password": "pass@123"}`  
     Response : HTTP response code
+
+## Sequence Diagram  
+![Sequence Diagram](JWT_Sequence.png)
