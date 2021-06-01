@@ -11,7 +11,8 @@ import (
 
 func Map(ds *store.DataStore) {
 	daoObject := dao.NewDaoStore(ds)
-	serviceObject := service.NewService(*daoObject)
+	jwtService := service.NewJwtService()
+	serviceObject := service.NewService(*daoObject, *jwtService)
 	contollerObject := controller.NewController(serviceObject)
 
 	ginRouter := gin.Default()

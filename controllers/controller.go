@@ -11,10 +11,10 @@ import (
 )
 
 type Controller struct {
-	Service service.Service
+	Service service.LoginService
 }
 
-func NewController(svc *service.Service) *Controller {
+func NewController(svc *service.LoginService) *Controller {
 	return &Controller{Service: *svc}
 }
 
@@ -27,14 +27,14 @@ func (con *Controller) Signin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, bindingError.Error())
 		c.Abort()
 	}
-	loginError := con.Service.Login(c, creds)
+	token, loginError := con.Service.Login(c, creds)
 	if loginError != nil {
 		c.JSON(http.StatusUnauthorized, loginError.Error())
 		c.Abort()
 		return
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (con *Controller) Register(c *gin.Context) {
