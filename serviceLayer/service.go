@@ -9,10 +9,10 @@ import (
 
 type LoginService struct {
 	DataStore  dao.DataStore
-	JwtService jwtService
+	JwtService JwtService
 }
 
-func NewService(ds dao.DataStore, js jwtService) *LoginService {
+func NewService(ds dao.DataStore, js JwtService) *LoginService {
 	return &LoginService{DataStore: ds, JwtService: js}
 }
 

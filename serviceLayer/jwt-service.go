@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -20,15 +19,15 @@ type jwtCustomeClaims struct {
 	jwt.StandardClaims
 }
 
-type jwtService struct {
+type JwtService struct {
 	SecretKey, Issuer string
 }
 
-func NewJwtService() *jwtService {
-	return &jwtService{SecretKey: secretKey, Issuer: issuer}
+func NewJwtService() *JwtService {
+	return &JwtService{SecretKey: secretKey, Issuer: issuer}
 }
 
-func (js *jwtService) GenerateToken(name string) (string, error) {
+func (js *JwtService) GenerateToken(name string) (string, error) {
 	claims := jwtCustomeClaims{
 		Name: name,
 		StandardClaims: jwt.StandardClaims{
@@ -51,7 +50,12 @@ func (js *jwtService) GenerateToken(name string) (string, error) {
 	return t, nil
 }
 
-func (js *jwtService) ValidateToken() {
-	cwd, _ := os.Getwd()
-	fmt.Println(cwd, time.Now())
+func (js *JwtService) ValidateToken(tokenString string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signin method: %v", token.Header["alg"])
+		}
+
+		return []byte(js.SecretKey), nil
+	})
 }
